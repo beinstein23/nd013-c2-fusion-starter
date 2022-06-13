@@ -113,3 +113,28 @@ Two result sampes can be obtained:
 
 It is worth to mention that the first scene (the 50-frame), the result is the same as the demontration given in the instruction site, namely, only two of the vehicles haven been extracted, but at the second frame (the 51-frame) the vehicle farest from us can also be identified.
 
+## Section 4: Performance Evaluation for Object Detection
+
+In this section, the performance of the algorithms are evaluated by computing the corresponding IOU between the bounding boxes of labels and detected objects:
+- Compute intersection-over-union (IOU) between labels and detections 
+- Compute false-negatives and false-positives
+- Compute precision and recall 
+
+Correspondingly, the codes have to be modified as follows:
+
+![img2](images/step4_section1_code1.png)
+
+![img2](images/step4_section1_code2.png)
+
+![img2](images/step4_section1_code3.png)
+
+![img2](images/step4_section1_code4.png)
+
+The histogram for the precision and recall can be plotted according to different cases:
+
+
+![img2](images/s4_output1.png)
+
+![img2](images/s4_output2.png)
+
+
