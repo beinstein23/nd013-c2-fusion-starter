@@ -1,140 +1,58 @@
-# Writeup: Track 3D-Objects Over Time
+# Writeup: Sensor Fusion and Object Tracking
 
 This is the project for the second course in the  [Udacity Self-Driving Car Engineer Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213) : Sensor Fusion and Tracking. 
 
-This mid-term project of the second course is finished within the online-workspace VM.
+This final project of the second course is finished within the online-workspace VM.
 
-## Section 1: Compute Lidar Point-Cloud from Range Image
+The final project consists of four sections, as described in [project rubric](https://review.udacity.com/#!/rubrics/3006/view)
 
-### part 1: Visualize range image channels (ID_S1_EX1)
-First af all we are to previewing the range image and convert the floating-data in its two channels (i.e. range and intensity) to 8-bit integer value range, respectively. Specifically, the tasks are listed as follows:
-
-- Convert range image “range” channel to 8bit
-- Convert range image “intensity” channel to 8bit
-- Crop range image to +/- 90 deg. left and right of the forward-facing x-axis
-- Stack cropped range and intensity image vertically and visualize the result using OpenCV
-
-To do these, the following changes have to be done in the `loop_over_dataset.py`
-
-![img1](images/step1_section1_code1.png)
-
-![img2](images/step1_section1_code2.png)
-
-and also in `object_pcl.py`
+## Section 1: Implement an "EKF" to track a single real-world target
+In this section, we a simple single-target-scenario to start, where there is only one vehicle to be tracked. 
+![img1](images-final/step1_output2.png)
 
 
-![img2](images/step1_section1_code3_1.png)
+![img1](images-final/step1_output1.png)
 
-![img2](images/step1_section1_code3_2.png)
+Since the initial estimation is not well handled, the initial tracking error is relatively large.
 
-As the results, we obtained:
+Remark: since only lidar-data are used in this section, the extended Kalman filter is indeed equivalent to the classic Kalman filter.
 
-It is worth to mention, the only the following figure fulfills the requirement of the projet, i.e.: crop range image to +/- 90 deg
-![img2](images/step1_section1_output.png)
+## Section 2: Implement the track management, then initialize and activate it.
 
-By comparison, a similar result as the demonstation of the project is indeed a range image to +/- 180 deg. The details can be seen in 98. - 101. line of the function `show_range_image`
+In this section, we deal with the track management including its initlization as well as the management of track state and track score.
 
-![img2](images/step1_section1_output_360.png)
+## Section 3: Imlement a single nearest neighbor data association for multi-object tracking
 
+In this step, the closest neighbor association is made to catch several different targets. 
 
-### part 2: Visualize point-cloud (ID_S1_EX2)
-For the second part of ths section, we are to visualize the point-cloud, the changes have to be done in `loop_over_dataset.py` and `object_pcl.py`
-
-![img2](images/step1_section2_code1.png)
-
-![img2](images/step1_section2_code2.png)
-
-With the above modifications, we obtained the PCL images:
-
-![img2](images/step1_section2_outpu1.png)![img2](images/step1_section2_outpu2.png)![img2](images/step1_section2_outpu3.png)
-![img2](images/step1_section2_outpu4.png)![img2](images/step1_section2_outpu7.png)![img2](images/step1_section2_outpu6.png)
-![img2](images/step1_section2_outpu7.png)![img2](images/step1_section2_outpu8.png)![img2](images/step1_section2_outpu9.png)
-
-The features such the cars, trucks can always be identified clearly. 
-
-## Section 2: Create Birds-Eye View from Lidar PCL
-
-In this section, we are to
-
-- Convert coordinates in x,y [m] into x,y [pixel] based on width and height of the bev map
-- Assign lidar intensity values to the cells of the bird-eye view map
-- Adjust the intensity in such a way that objects of interest (e.g. vehicles) are clearly visible
-- Make use of the sorted and pruned point-cloud lidar_pcl_top from the previous task
-- Normalize the height in each BEV map pixel by the difference between max. and min. height
-- Fill the "height" channel of the BEV map with data from the point-cloud
-
-The changes are made in the `loop_over_dataset.py` and `object_pcl.py`
-![img2](images/step2_section1_code1.png)
-![img2](images/step2_section1_code2.png)
-![img2](images/step2_section1_code3.png)
-
-A result sample for the BEV:
-
-![img2](images/step2_section1_output1.png)
-
-To figure out the intensity image, the following modifications have to be finished:
-
-![img2](images/step2_section2_code1.png)
-
-![img2](images/step2_section2_output1.png)
-
-To fill the "height" channel of the BEV map with data from the point-cloud, we changed the code and obtained the results:
-
-![img2](images/step2_section3_code1.png)
-
-![img2](images/step2_section3_output1.png)
-
-## Section 3: Model-based Object Detection in BEV Image
-
-In the third section, we introduced a third-party package into our code and extract features of interest. To be specific:
-
-- In addition to Complex YOLO, extract the code for output decoding and post-processing from the [GitHub repo](https://github.com/maudzung/SFA3D).
-- Transform BEV coordinates in [pixels] into vehicle coordinates in [m]
-- Convert model output to expected bounding box format [class-id, x, y, z, h, w, l, yaw]
-
-Correspondingly, the changes have to be made as follows:
+![img1](images-final/step3_output1.png)
 
 
-![img2](images/step3_section1_code1.png)
+## Section 4: implement the non-linear observation model with camera and complete the sensor fusion module for camera-lidar fusion!
 
-![img2](images/step3_section1_code2.png)
+The core of this course, we use different sensors (lidar and camera) to complement the pros and cons of each sensor. To end this, we first implemented a nonlinear observation model for camera, that is the reason for using extended Kalman filter. Since each sensor typically has a different field of view, we introduced function `in_fov()` to figure out if some object can be identified by a camera theretically. This is a significantly critical topic, because it is related to the state of detected object.
 
-![img2](images/step3_section1_code_s3.png)
+The final results can be obtained as follows:
 
-![img2](images/step3_section1_code_s4.png)
+![img1](images-final/step4_output1.png)
 
-![img2](images/step3_section1_code_s5.png)
-
-Two result sampes can be obtained:
-
-![img2](images/step3_section2_outpu1.png)
-
-![img2](images/step3_section2_outpu2.png)
-
-It is worth to mention that the first scene (the 50-frame), the result is the same as the demontration given in the instruction site, namely, only two of the vehicles haven been extracted, but at the second frame (the 51-frame) the vehicle farest from us can also be identified.
-
-## Section 4: Performance Evaluation for Object Detection
-
-In this section, the performance of the algorithms are evaluated by computing the corresponding IOU between the bounding boxes of labels and detected objects:
-- Compute intersection-over-union (IOU) between labels and detections 
-- Compute false-negatives and false-positives
-- Compute precision and recall 
-
-Correspondingly, the codes have to be modified as follows:
-
-![img2](images/step4_section1_code1.png)
-
-![img2](images/step4_section1_code2.png)
-
-![img2](images/step4_section1_code3.png)
-
-![img2](images/step4_section1_code4.png)
-
-The histogram for the precision and recall can be plotted according to different cases:
+![img1](images-final/step4_output2.png)
 
 
-![img2](images/s4_output1.png)
+1. Write a short recap of the four tracking steps and what you implemented there (filter, track management, association, camera fusion). Which results did you achieve? Which part of the project was most difficult for you to complete, and why?
 
-![img2](images/s4_output2.png)
+
+
+2. Do you see any benefits in camera-lidar fusion compared to lidar-only tracking (in theory and in your concrete results)?
+
+
+
+
+3. Which challenges will a sensor fusion system face in real-life scenarios? Did you see any of these challenges in the project?
+
+
+
+4. Can you think of ways to improve your tracking results in the future?
+
 
 
