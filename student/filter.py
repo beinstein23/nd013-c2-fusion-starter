@@ -24,14 +24,21 @@ import misc.params as params
 class Filter:
     '''Kalman filter class'''
     def __init__(self):
-        pass
+        ## Is this a part of task ???
+        self.dim_state = params.dim_state
+        self.dt = params.dt
+        self.q = params.q
 
     def F(self):
         ############
         # TODO Step 1: implement and return system matrix F
         ############
-
-        return 0
+        dt = self.dt
+        F = np.eye(self.dim_state)
+        F[0, 3] = self.dt 
+        F[1, 4] = self.dt 
+        F[2, 5] = self.dt
+        return np.matrix(F)
         
         ############
         # END student code
@@ -41,8 +48,12 @@ class Filter:
         ############
         # TODO Step 1: implement and return process noise covariance Q
         ############
-
-        return 0
+        dt = self.dt
+        q = self.q
+        q1 = (dt **3) * q/3
+        q2 = (dt **2) * q/2
+        q3 = dt * q
+        return np.matrix([[q1, 0, 0, q2, 0, 0],[0, q1, 0, 0, q2, 0], [0, 0, q1, 0, 0, q2], [q2, 0, 0, q3, 0, 0], [0, q2, 0, 0, q3, 0], [0, 0, q2, 0, 0, q3]])
         
         ############
         # END student code
@@ -52,8 +63,13 @@ class Filter:
         ############
         # TODO Step 1: predict state x and estimation error covariance P to next timestep, save x and P in track
         ############
-
-        pass
+        F = self.F()
+        Q = self.Q()
+        x = F * track.x  
+        P = F * track.P * F.transpose() + Q
+        track.set_x(x)
+        track.set_P(P)
+        # without return value
         
         ############
         # END student code
@@ -63,7 +79,16 @@ class Filter:
         ############
         # TODO Step 1: update state x and covariance P with associated measurement, save x and P in track
         ############
+        H = meas.sensor.get_H(track.x)  
+        gamma = self.gamma(track, meas)
+        S = self.S(track, meas, H)
+        K = track.P * H.transpose() * np.linalg.inv(S) 
+        x = track.x + K * gamma 
+        I = np.identity(self.dim_state)
+        P = (I - K*H) * track.P 
         
+        track.set_x(x)
+        track.set_P(P)
         ############
         # END student code
         ############ 
@@ -73,8 +98,8 @@ class Filter:
         ############
         # TODO Step 1: calculate and return residual gamma
         ############
-
-        return 0
+        gm = meas.z - meas.sensor.get_hx(track.x)
+        return gm
         
         ############
         # END student code
@@ -84,8 +109,13 @@ class Filter:
         ############
         # TODO Step 1: calculate and return covariance of residual S
         ############
+        H = meas.sensor.get_H(track.x)  
+        P = track.P
+        R = meas.R
+        S = H*P*H.transpose() + R # covariance of residual
 
-        return 0
+        
+        return S 
         
         ############
         # END student code
