@@ -41,18 +41,39 @@ The final results can be obtained as follows:
 
 1. Write a short recap of the four tracking steps and what you implemented there (filter, track management, association, camera fusion). Which results did you achieve? Which part of the project was most difficult for you to complete, and why?
 
+- Filter
+    - In the reality, the kimatic or even kinetic model of a vehicle can be very complicated, and thus using the extended Kalman filter is more rational. 
+    - To pursue a more accurate numerical result, usually we may needd a higher order discretization method which leads to a larger amount of computation. Therefore a high performance mathmatical libary is needed.
+    - Reason for introudcing extended kalman filter is that the while noises will be distorted under a non-linear model. However, the extended Kalman filter also brings about the error. Probably, unscented Kalman Filter could be a better choice.    
+
+- track management 
+  - A very critical part. We must initialze the new tracks with thoughtful data container.
+  - We have to decide if a detected object is false positive, and also deal with the situations where the vehcles apper or disappear in the view.
+  - We pursue a stable mechanism to confirm a detected object, and also to remove a tentative object or those leave the field of view.
+
+-   association
+    -   It is also importat, which is related the track score. We have decide which measurement belongs to which object.
+    -   A wrong association brings about a ipulse increase of estimation for the underlying tracking models.
+    -   MDH is a good metric to solve the most likely match problem
+  
+- camera fussion
+  - Core of the course. To use both the advantages of the sensors and enlarge the visibility.
+
+Overall, starting from the implementation, the tracking management is the most challening part, since we hvae to initialize different tracks, and manage their scores and states. Additionally, we must remove the object, if it leave the field of view and also add a new object to the list if it is captured by a sensor output.
+
 
 
 2. Do you see any benefits in camera-lidar fusion compared to lidar-only tracking (in theory and in your concrete results)?
-
+Camera is especially advantageous to recognize traffic sings. On the otherhand we have more possibilities to confirm if a detected is tentative, since we have more observatuon data.
 
 
 
 3. Which challenges will a sensor fusion system face in real-life scenarios? Did you see any of these challenges in the project?
 
+Lidar can not recognized a trafffic sign while camera is not good at measuring the distance. 
 
 
 4. Can you think of ways to improve your tracking results in the future?
 
-
+Using UKF filter, a more reliable kinematic model as well as a more advanced track management strategy.
 
